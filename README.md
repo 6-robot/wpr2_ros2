@@ -67,12 +67,22 @@
 sudo apt update
 sudo apt install -y git python3-colcon-common-extensions
 source /opt/ros/humble/setup.bash
-mkdir -p ~/ros2_ws/src
 ```
 
-### 2. 准备配套源码
+### 2. 代码部署
 
-将本项目放到 `~/ros2_ws/src/wpr2_ros2`。根据需要准备以下外部软件包，源码应使用 ROS2 Humble 兼容版本：
+创建工作空间，在 `src` 目录下载启明2机器人源码、C1雷达驱动，以及航点和语音实验所需的软件包：
+
+```bash
+mkdir -p ~/ros2_ws/src
+cd ~/ros2_ws/src
+git clone https://github.com/6-robot/wpr2_ros2
+git clone https://github.com/Slamtec/sllidar_ros2.git
+git clone https://github.com/6-robot/wp_map_tools.git
+git clone https://github.com/6-robot/wp_speech
+```
+
+已有对应源码目录时，跳过相应的克隆命令。配套软件包使用 ROS2 Humble 兼容版本；各软件包的用途如下：
 
 | 软件包 | 用途 | 获取方式 |
 | --- | --- | --- |
@@ -91,8 +101,6 @@ ros2_ws/
     ├── wp_map_tools/
     └── wp_speech/
 ```
-
-检测与抓取程序使用本项目内的 `wpr2_msgs`，不依赖启智机器人或仿真工程的自定义消息包。
 
 ### 3. 安装依赖并编译
 
@@ -158,7 +166,7 @@ ros2 run wpr2_tutorials check_runtime.py --group camera
 
 ## 功能特性
 
-以下介绍对应本仓库及配套软件包已提供的 ROS2 功能。配图用于功能示意，实际界面以当前版本运行结果为准。
+以下介绍对应本仓库及配套软件包已提供的 ROS2 功能。
 
 ### 1. URDF 模型描述
 
