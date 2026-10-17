@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+  <link name = "chest_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://wpr2_description/meshes/chest.dae" scale=" 1 1 1 "/>
+      </geometry>
+      <origin rpy = "0 0 0" xyz = "0.015 0.0 0.01"/>
+    </visual>
+    <collision>
+      <origin xyz="0.04 0 -0.01" rpy="0 0 0"/>
+      <geometry>
+       <box size="0.1 0.22 0.15"/>
+      </geometry>
+    </collision>
+     <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <joint name="chest_height" type="prismatic">
+    <parent link="base_link"/>
+    <child link="chest_link"/>
+    <limit effort="1000.0" lower="0" upper="0.7" velocity="0.5"/>
+    <dynamics damping="0.0" friction="0.0"/>
+    <origin xyz="0.0 0 0.4" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Camera -->
+  <link name="femto_base">
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <!-- <box size=".1 .25 .07"/> -->
+        <box size="0 0 0"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.1"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+  </link>
+  <joint name="femto_height" type="prismatic">
+    <parent link="chest_link"/>
+    <child link="femto_base"/>
+    <limit effort="1000.0" lower="-1.0" upper="1.0" velocity="0.5"/>
+    <origin xyz="0.05 0 0" rpy="0 -1.5707963 0"/>
+  </joint>
+
+  <link name="camera_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <mesh filename="package://wpr2_description/meshes/femto_bolt.dae" scale="1 1 1"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="-0.015 0 0" rpy="0 0 0"/>
+      <geometry>
+       <box size="0.05 0.1 0.04"/>
+      </geometry>
+    </collision>
+     <inertial>
+      <mass value="1"/>
+      <inertia ixx="0.1" ixy="0.0" ixz="0.0" iyy="0.1" iyz="0.0" izz="0.01"/>
+    </inertial>
+  </link>
+
+  <joint name="femto_pitch" type="revolute">
+    <axis xyz="0 -1 0"/>
+    <limit effort="1000.0" lower="-1.57" upper="1.57" velocity="0.5"/>
+    <origin xyz="0 0 0" rpy="0 1.57 0"/>
+    <parent link="femto_base"/>
+    <child link="camera_link"/>
+  </joint>
+
+</robot>

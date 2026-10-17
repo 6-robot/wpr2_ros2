@@ -1,0 +1,77 @@
+Panels:
+- Class: rviz_common/Displays
+  Name: Displays
+- Class: rviz_common/Views
+  Name: Views
+Visualization Manager:
+  Class: ''
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: base_footprint
+    Frame Rate: 30
+  Displays:
+  - Class: rviz_default_plugins/Grid
+    Name: Grid
+    Enabled: true
+    Cell Size: 1
+    Plane Cell Count: 10
+    Reference Frame: <Fixed Frame>
+  - Class: rviz_default_plugins/RobotModel
+    Name: RobotModel
+    Enabled: true
+    Alpha: 1
+    Description Source: Topic
+    Description Topic:
+      Value: /robot_description
+      Reliability Policy: Reliable
+      Durability Policy: Transient Local
+      History Policy: Keep Last
+      Depth: 1
+    Visual Enabled: true
+    Collision Enabled: false
+  - Class: rviz_default_plugins/TF
+    Name: TF
+    Enabled: false
+    Show Names: false
+    Show Axes: true
+    Show Arrows: true
+  - Class: rviz_default_plugins/LaserScan
+    Name: LaserScan
+    Enabled: true
+    Topic:
+      Value: /scan
+      Reliability Policy: Best Effort
+      Durability Policy: Volatile
+      Depth: 5
+    Size (m): 0.02
+    Style: Points
+  - Class: rviz_default_plugins/PointCloud2
+    Name: PointCloud2
+    Enabled: true
+    Topic:
+      Value: /camera/depth_registered/points
+      Reliability Policy: Best Effort
+      Durability Policy: Volatile
+      Depth: 5
+    Color Transformer: RGB8
+    Position Transformer: XYZ
+    Size (m): 0.01
+  Tools:
+  - Class: rviz_default_plugins/Interact
+  - Class: rviz_default_plugins/MoveCamera
+  - Class: rviz_default_plugins/Select
+  - Class: rviz_default_plugins/FocusCamera
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 3.5
+      Pitch: 0.3
+      Yaw: 0.8
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0.8
+      Target Frame: base_footprint
+Window Geometry:
+  Width: 1200
+  Height: 800

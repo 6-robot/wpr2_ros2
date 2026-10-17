@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: wpr2_description
+    relative_path: urdf/wpr2.urdf.xacro
+    xacro_args: ""
+  SRDF:
+    relative_path: config/wpr2.srdf
+  CONFIG:
+    author_name: ZhangWanjie
+    author_email: zhangwanjie@6-robot.com
+    generated_timestamp: 1758547489

@@ -1,0 +1,77 @@
+Panels:
+- Class: rviz_common/Displays
+  Name: Displays
+Visualization Manager:
+  Class: ''
+  Global Options:
+    Fixed Frame: base_footprint
+    Background Color: 48; 48; 48
+  Displays:
+  - Class: rviz_default_plugins/Grid
+    Name: Grid
+    Enabled: true
+    Cell Size: 1
+  - Class: rviz_default_plugins/RobotModel
+    Name: WPR2
+    Enabled: true
+    Visual Enabled: true
+    Collision Enabled: false
+    Description Source: Topic
+    Description Topic:
+      Value: /robot_description
+      Depth: 5
+      Durability Policy: Transient Local
+      Reliability Policy: Reliable
+      History Policy: Keep Last
+  - Class: rviz_default_plugins/LaserScan
+    Name: Scan
+    Enabled: true
+    Topic:
+      Value: /scan
+      Depth: 5
+      Durability Policy: Volatile
+      Reliability Policy: Best Effort
+      History Policy: Keep Last
+    Size (Pixels): 3
+  - Class: rviz_default_plugins/PointCloud2
+    Name: PointCloud
+    Enabled: true
+    Topic:
+      Value: /camera/depth_registered/points
+      Depth: 5
+      Durability Policy: Volatile
+      Reliability Policy: Best Effort
+      History Policy: Keep Last
+    Size (Pixels): 2
+    Color Transformer: RGB8
+  - Class: rviz_default_plugins/Image
+    Name: Color
+    Enabled: true
+    Topic:
+      Value: /camera/color/image_raw
+      Depth: 5
+      Durability Policy: Volatile
+      Reliability Policy: Best Effort
+      History Policy: Keep Last
+  - Class: rviz_default_plugins/MarkerArray
+    Name: Objects
+    Enabled: true
+    Topic:
+      Value: /objects_marker
+      Depth: 5
+      Durability Policy: Volatile
+      Reliability Policy: Best Effort
+      History Policy: Keep Last
+  Tools:
+  - Class: rviz_default_plugins/MoveCamera
+  - Class: rviz_default_plugins/Select
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 3.0
+      Pitch: 0.4
+      Yaw: 0.8
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0.7

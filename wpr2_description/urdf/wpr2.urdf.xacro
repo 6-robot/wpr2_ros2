@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<robot name="wpr2" xmlns:xacro="http://ros.org/wiki/xacro">
+
+  <xacro:include filename="base_mecanum.urdf.xacro"/>
+
+  <xacro:include filename="torso.xacro"/>
+
+  <!-- Left Arm -->
+  <xacro:include filename="arm_left.urdf.xacro"/>
+  <xacro:arm_left base_frame="chest_link" x="0.035" y="0.18" z="0.0" roll="0" pitch="${M_PI}" yaw="0"/>
+
+  <!-- Right Arm -->
+  <xacro:include filename="arm_right.urdf.xacro"/>
+  <xacro:arm_right base_frame="chest_link" x="0.035" y="-0.18" z="0.0" roll="0" pitch="0" yaw="${M_PI}"/>
+
+
+</robot>

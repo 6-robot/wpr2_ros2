@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<robot name="wpr2" xmlns:xacro="http://ros.org/wiki/xacro">
+  <!-- The complete WPR2 model already includes both mimic-joint grippers. -->
+  <xacro:include filename="wpr2.urdf.xacro"/>
+</robot>

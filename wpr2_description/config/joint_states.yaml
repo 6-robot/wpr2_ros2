@@ -1,0 +1,15 @@
+/**:
+  ros__parameters:
+    rate: 30
+    zeros:
+      femto_height: 0.15
+      femto_pitch: 0.02
+      chest_height: 0.7
+      left_joint_1: 0.6
+      left_joint_2: -1.57
+      left_joint_4: -1.163
+      right_joint_1: -0.6
+      right_joint_2: 1.57
+      right_joint_4: 1.163
+      left_joint_finger: 0.05
+      right_joint_finger: 0.05
