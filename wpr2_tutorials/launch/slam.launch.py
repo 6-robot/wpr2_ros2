@@ -8,7 +8,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
     launch_file = os.path.join(
-        get_package_share_directory('wpr2_tutorials'), 'launch', 'ex08_slam.launch.py')
+        get_package_share_directory('wpr2_tutorials'), 'launch', 'ex06_slam.launch.py')
     include_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(launch_file),
     )

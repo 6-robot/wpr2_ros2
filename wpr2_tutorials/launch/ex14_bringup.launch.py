@@ -2,9 +2,8 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import EmitEvent, IncludeLaunchDescription
+from launch.actions import EmitEvent
 from launch.events import Shutdown
-from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -47,12 +46,6 @@ def generate_launch_description():
     )
 
 
-    femto_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(os.path.join(
-            bringup_dir, 'launch', 'include', 'start_femto_bolt.launch.py')),
-    )
-
-
     rviz_cmd = Node(
         package='rviz2',
         executable='rviz2',
@@ -64,7 +57,6 @@ def generate_launch_description():
 
     ld.add_action(wpr2_core_cmd)
     ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(femto_cmd)
     ld.add_action(rviz_cmd)
 
     return ld

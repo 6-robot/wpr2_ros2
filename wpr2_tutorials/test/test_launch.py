@@ -46,7 +46,7 @@ def test_launch_python_and_expected_experiments():
     for path in (ROOT / 'launch').glob('*.py'):
         assert 'experiment.launch.py' not in path.read_text()
         assert 'base.launch.py' not in path.read_text()
-    expected = set(range(1, 21))
+    expected = set(range(1, 19))
     actual = {int(p.name[2:4]) for p in (ROOT / 'launch').glob('ex??_bringup.launch.py')}
     assert actual == expected
     manifest = ET.parse(ROOT / 'package.xml')
@@ -61,36 +61,33 @@ def parameters(action, context):
             for key, value in entry.items()}
 
 
-@pytest.mark.parametrize('number', range(2, 18))
+@pytest.mark.parametrize('number', range(2, 16))
 def test_independent_experiment_nodes_and_configuration(number):
     mod = module(ROOT / f'launch/ex{number:02d}_bringup.launch.py')
     context = context_for(mod)
     actions = mod.generate_launch_description().entities
     nodes = {executable(action, context): action for action in actions if isinstance(action, Node)}
     expected = {'robot_state_publisher'}
-    expected.add('joint_state_publisher_gui' if number == 11 else 'wpr2_core')
-    if number not in (8, 9, 10):
+    expected.add('joint_state_publisher_gui' if number == 9 else 'wpr2_core')
+    if number not in (6, 7, 8):
         expected.add('rviz2')
-    if number in (4, 5, 8, 9, 10, 17):
+    if number in (4, 5, 6, 7, 8, 15):
         expected.update(['sllidar_node', 'wpr2_lidar_filter'])
-    if number == 13:
+    if number == 11:
         expected.add('face_detector.py')
-    if number == 17:
+    if number == 15:
         expected.add('wpr2_objects_3d')
     assert set(nodes) == expected
     assert len(nodes) == sum(isinstance(action, Node) for action in actions)
     assert not any(isinstance(action, DeclareLaunchArgument) for action in actions)
     assert all(action.condition is None for action in actions)
 
-    if number != 11:
+    if number != 9:
         core = parameters(nodes['wpr2_core'], context)
         assert core['serial_port'] == '/dev/ftdi'
         assert core['publish_odom_tf'] is True and core['use_sim_time'] is False
         assert core['odom_frame'] == 'odom' and core['base_frame'] == 'base_footprint'
-        if number in (6, 7):
-            assert core['imu_pub'] is True
-        else:
-            assert 'imu_pub' not in core  # Preserve the YAML setting outside IMU experiments.
+        assert 'imu_pub' not in core  # Preserve the driver's YAML setting.
     rsp = parameters(nodes['robot_state_publisher'], context)
     assert ET.fromstring(rsp['robot_description']).find("link[@name='base_footprint']") is not None
     assert rsp['use_sim_time'] is False
@@ -106,13 +103,13 @@ def test_independent_experiment_nodes_and_configuration(number):
             (perform_substitutions(context, src), perform_substitutions(context, dst))
             for src, dst in nodes['sllidar_node']._Node__remappings]
     includes = [action for action in actions if isinstance(action, IncludeLaunchDescription)]
-    if number in (11, 12, 13, 14, 15, 17):
+    if number in (9, 10, 11, 12, 13, 15):
         assert len(includes) == 1
         includes[0].launch_description_source.get_launch_description(context)
         assert includes[0].launch_description_source.location.endswith('include/start_femto_bolt.launch.py')
     else:
         assert includes == []
-    if number == 17:
+    if number == 15:
         assert parameters(nodes['wpr2_objects_3d'], context)['auto_start'] is True
         assert 'wpr2_grab' not in nodes
 
@@ -120,10 +117,10 @@ def test_independent_experiment_nodes_and_configuration(number):
 @pytest.mark.parametrize('filename, target', [
     ('ex01_bringup.launch.py', 'ex01_intro.launch.py'),
     ('ex01_intro.launch.py', 'urdf.launch.py'),
-    ('ex18_bringup.launch.py', 'tts.launch.py'),
-    ('ex19_bringup.launch.py', 'sr_cn.launch.py'),
-    ('slam.launch.py', 'ex08_slam.launch.py'),
-    ('navigation.launch.py', 'ex09_navigation.launch.py'),
+    ('ex16_bringup.launch.py', 'tts.launch.py'),
+    ('ex17_bringup.launch.py', 'sr_cn.launch.py'),
+    ('slam.launch.py', 'ex06_slam.launch.py'),
+    ('navigation.launch.py', 'ex07_navigation.launch.py'),
 ])
 def test_compatibility_and_external_launch_entries(filename, target):
     mod = module(ROOT / 'launch' / filename)
@@ -145,7 +142,7 @@ def test_teleop_and_slam_launches():
     assert set(nodes) == {'joy_node', 'wpr2_js_vel'}
     assert parameters(nodes['joy_node'], context)['autorepeat_rate'] == 20.0
     assert parameters(nodes['wpr2_js_vel'], context)['joy_timeout'] == 1.0
-    mod = module(ROOT / 'launch/ex08_slam.launch.py')
+    mod = module(ROOT / 'launch/ex06_slam.launch.py')
     context = context_for(mod)
     actions = mod.generate_launch_description().entities
     nodes = {executable(action, context): action for action in actions}
@@ -154,7 +151,7 @@ def test_teleop_and_slam_launches():
 
 
 def test_fetch_launch_composition_and_files(tmp_path, monkeypatch):
-    mod = module(ROOT / 'launch/ex20_bringup.launch.py')
+    mod = module(ROOT / 'launch/ex18_bringup.launch.py')
     context = context_for(mod, map=tmp_path / 'ignored.yaml', waypoints=tmp_path / 'ignored.xml')
     map_file = tmp_path / 'map.yaml'
     waypoint_file = tmp_path / 'waypoints.xml'
@@ -213,7 +210,7 @@ def test_imu_launch_override_preserves_default():
 
 
 def test_navigation_uses_package_map_without_arguments_or_file_checks(tmp_path, monkeypatch):
-    mod = module(ROOT / 'launch/ex09_navigation.launch.py')
+    mod = module(ROOT / 'launch/ex07_navigation.launch.py')
     share = tmp_path / 'installed_tutorials'
     real_share = mod.get_package_share_directory
     monkeypatch.setattr(mod, 'get_package_share_directory', lambda name:
@@ -233,7 +230,7 @@ def test_navigation_uses_package_map_without_arguments_or_file_checks(tmp_path, 
 
 
 def test_waypoint_navigation_uses_fixed_files_without_preflight_checks(tmp_path, monkeypatch):
-    mod = module(ROOT / 'launch/ex10_map_tools.launch.py')
+    mod = module(ROOT / 'launch/ex08_map_tools.launch.py')
     share = tmp_path / 'installed_tutorials'
     real_share = mod.get_package_share_directory
     monkeypatch.setattr(mod, 'get_package_share_directory', lambda name:

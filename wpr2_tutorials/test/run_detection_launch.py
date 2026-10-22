@@ -1,4 +1,4 @@
-"""Run only the real ex17 launch's detector for hardware-free integration tests."""
+"""Run only the real ex15 launch's detector for hardware-free integration tests."""
 import os
 
 from ament_index_python.packages import get_package_share_directory
@@ -11,14 +11,14 @@ from launch_ros.actions import Node
 def main():
     context = LaunchContext()
     source = PythonLaunchDescriptionSource(os.path.join(
-        get_package_share_directory('wpr2_tutorials'), 'launch', 'ex17_bringup.launch.py'))
+        get_package_share_directory('wpr2_tutorials'), 'launch', 'ex15_bringup.launch.py'))
     description = source.get_launch_description(context)
     detectors = [action for action in description.entities
                  if isinstance(action, Node) and
                  perform_substitutions(context, normalize_to_list_of_substitutions(
                      action.node_executable)) == 'wpr2_objects_3d']
     if len(detectors) != 1:
-        raise RuntimeError('ex17_bringup must directly define exactly one object detector')
+        raise RuntimeError('ex15_bringup must directly define exactly one object detector')
     service = LaunchService(argv=[], noninteractive=True)
     service.include_launch_description(LaunchDescription(detectors))
     return service.run()

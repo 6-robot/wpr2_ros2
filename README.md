@@ -19,7 +19,7 @@
 
 启明2（WPR2）是北京六部工坊科技有限公司推出的面向仿人操作应用的教学、竞赛和科研平台。整机采用模块化设计，由麦克纳姆轮全向底盘、可升降的动力脊柱、两条六自由度仿人机械臂、两指手爪、三维视觉和语音交互系统组成，适用于移动操作、具身智能及服务机器人应用研究。
 
-本项目提供 ROS2 Humble 下的实物驱动、机器人模型、感知与导航、物品抓取、MoveIt 2 配置，以及实验一至二十的参考程序。配套传感器包括 C1 激光雷达和 Femto Bolt RGB-D 相机，底盘、上肢和里程计通过同一个串口驱动与机器人控制器通信。
+本项目提供 ROS2 Humble 下的实物驱动、机器人模型、感知与导航、物品抓取、MoveIt 2 配置，以及实验一至十八的参考程序。配套传感器包括 C1 激光雷达和 Femto Bolt RGB-D 相机，底盘、上肢和里程计通过同一个串口驱动与机器人控制器通信。
 
 ## 硬件特点
 
@@ -54,7 +54,6 @@
 | 机器人控制器 | 底盘与上肢串口通信，默认 `/dev/ftdi` |
 | C1 激光雷达 | 二维扫描、建图与导航；串口默认 `/dev/rplidar`，波特率 460800 |
 | Femto Bolt 相机 | 彩色图像、深度图像和彩色点云 |
-| 六轴 IMU | 姿态、角速度和加速度信息 |
 | USB 手柄 | 底盘遥控 |
 
 ## 使用步骤
@@ -88,8 +87,8 @@ git clone https://github.com/6-robot/wp_speech
 | --- | --- | --- |
 | `sllidar_ros2` | C1 雷达驱动 | [Slamtec/sllidar_ros2](https://github.com/Slamtec/sllidar_ros2)，放入工作空间 `src` |
 | `orbbec_camera`、`orbbec_description` | Femto Bolt 驱动及配套模型 | 由下方依赖脚本安装；需要修改驱动时可使用 [OrbbecSDK_ROS2](https://github.com/orbbec/OrbbecSDK_ROS2) 源码 |
-| `wp_map_tools` | 实验10、20的航点编辑与导航服务 | [6-robot/wp_map_tools](https://github.com/6-robot/wp_map_tools)，准备配套 ROS2 版本 |
-| `wp_speech` | 实验18、19的语音合成与识别 | [6-robot/wp_speech](https://github.com/6-robot/wp_speech)，准备配套 ROS2 版本及语音模型 |
+| `wp_map_tools` | 实验8、18的航点编辑与导航服务 | [6-robot/wp_map_tools](https://github.com/6-robot/wp_map_tools)，准备配套 ROS2 版本 |
+| `wp_speech` | 实验16、17的语音合成与识别 | [6-robot/wp_speech](https://github.com/6-robot/wp_speech)，准备配套 ROS2 版本及语音模型 |
 
 完整实验环境的源码目录如下，相机使用系统安装的软件包时无需额外复制源码：
 
@@ -114,7 +113,7 @@ colcon build
 source install/setup.bash
 ```
 
-`install_deps.sh` 安装构建工具、ROSIDL、底盘、Orbbec、OpenCV/PCL、SLAM Toolbox、Nav2、MoveIt 及测试依赖，也包含配套航点和语音包的系统依赖，并同步升级已安装的 MoveIt 软件包。编译由后面的 `colcon build` 完成。外部源码包仍按上节准备；语音 Python 环境及模型按 `wp_speech` 的说明准备，实验13还需要 Python `face_recognition`。
+`install_deps.sh` 安装构建工具、ROSIDL、底盘、Orbbec、OpenCV/PCL、SLAM Toolbox、Nav2、MoveIt 及测试依赖，也包含配套航点和语音包的系统依赖，并同步升级已安装的 MoveIt 软件包。编译由后面的 `colcon build` 完成。外部源码包仍按上节准备；语音 Python 环境及模型按 `wp_speech` 的说明准备，实验11还需要 Python `face_recognition`。
 
 修改源码后，回到 `~/ros2_ws` 重新执行 `colcon build`，再加载 `install/setup.bash`。
 
@@ -157,7 +156,7 @@ ros2 run wpr2_tutorials check_runtime.py --group camera
 | --- | --- |
 | [wpr2_description](wpr2_description/) | 机器人 URDF/Xacro、网格、初始关节状态和模型显示 |
 | [wpr2_bringup](wpr2_bringup/) | 串口驱动、底盘与双臂控制、里程计、雷达滤波、手柄和设备规则 |
-| [wpr2_tutorials](wpr2_tutorials/) | 实验一至二十的参考代码、独立 launch 和 RViz 配置 |
+| [wpr2_tutorials](wpr2_tutorials/) | 实验一至十八的参考代码、独立 launch 和 RViz 配置 |
 | [wpr2_behaviors](wpr2_behaviors/) | 三维物体检测、目标对准及物品抓取流程 |
 | [wpr2_msgs](wpr2_msgs/) | 物体检测消息 `wpr2_msgs/msg/Object` |
 | [wpr2_moveit_config](wpr2_moveit_config/) | MoveIt 2 规划、离线演示和实机轨迹桥接 |
@@ -182,7 +181,7 @@ ros2 run wpr2_tutorials check_runtime.py --group camera
 
 ### 3. IMU 姿态传感
 
-内置六轴 IMU 提供姿态、角速度和加速度数据，可用于姿态观察和航向控制实验。驱动通过 `imu_pub:=true` 开启 `/imu/data_raw` 发布；实物数据的单位与标定说明见 `wpr2_bringup/README.md`。
+内置六轴 IMU 提供姿态、角速度和加速度数据，可用于姿态观察和航向控制。驱动通过 `imu_pub:=true` 开启 `/imu/data_raw` 发布；实物数据的单位与标定说明见 `wpr2_bringup/README.md`。
 
 ![IMU 姿态数据与机器人倾斜姿态](media/wpr2_imu.jpg)
 
@@ -284,7 +283,7 @@ ros2 launch wpr2_bringup base_lidar.launch.py joystick:=true
 终端二启动建图和 RViz2：
 
 ```bash
-ros2 launch wpr2_tutorials ex08_slam.launch.py
+ros2 launch wpr2_tutorials ex06_slam.launch.py
 ```
 
 地图保存方法见下一节。
@@ -300,7 +299,7 @@ ros2 launch wpr2_bringup base_lidar.launch.py
 将当前场地地图保存到教程包的 `maps` 目录并重新编译，另一个终端启动导航：
 
 ```bash
-ros2 launch wpr2_tutorials ex09_navigation.launch.py
+ros2 launch wpr2_tutorials ex07_navigation.launch.py
 ```
 
 在 RViz2 中用 **2D Pose Estimate** 设置初始位姿，确认激光与地图对齐，再用 **Nav2 Goal** 设置目标。
@@ -350,13 +349,13 @@ ros2 launch wpr2_moveit_config real_robot.launch.py
 终端一：中文识别
 
 ```bash
-ros2 launch wpr2_tutorials ex19_bringup.launch.py
+ros2 launch wpr2_tutorials ex17_bringup.launch.py
 ```
 
 终端二：语音合成服务
 
 ```bash
-ros2 launch wpr2_tutorials ex18_bringup.launch.py
+ros2 launch wpr2_tutorials ex16_bringup.launch.py
 ```
 
 终端三：发送朗读文字
@@ -385,7 +384,7 @@ colcon build
 source install/setup.bash
 ```
 
-实验9和10固定从包共享目录读取地图，无需传入参数。实验10的航点固定为 `~/waypoints.xml`，不做额外文件检查；实验20仍通过 `map`、`waypoints` 参数指定文件。
+实验7和8固定从包共享目录读取地图，无需传入参数。实验8的航点固定为 `~/waypoints.xml`，不做额外文件检查；实验18也固定读取包内地图和 `~/waypoints.xml`，保留文件检查。
 
 航点默认保存在 `~/waypoints.xml`。首次编辑航点时，分别打开以下终端；地图编辑不需要启动机器人硬件：
 
@@ -415,13 +414,13 @@ ros2 run rviz2 rviz2 -d "$(ros2 pkg prefix wp_map_tools)/share/wp_map_tools/rviz
 ros2 run wp_map_tools wp_saver
 ```
 
-在 RViz2 中使用 **Add Waypoint** 工具添加航点。保存 XML 后，结束编辑环境，再配合底盘与雷达运行 `ex10_map_tools.launch.py` 进行航点导航。实验20需要预先保存名为 `kitchen` 和 `guest` 的航点，并在定位完成后启动任务程序。
+在 RViz2 中使用 **Add Waypoint** 工具添加航点。保存 XML 后，结束编辑环境，再配合底盘与雷达运行 `ex08_map_tools.launch.py` 进行航点导航。实验18需要预先保存名为 `kitchen` 和 `guest` 的航点，并在定位完成后启动任务程序。
 
 ## 实验示例
 
 [wpr2_tutorials/examples](wpr2_tutorials/examples/) 保存参考 C++ 程序，[wpr2_tutorials/launch](wpr2_tutorials/launch/) 保存配套启动文件，采用 `exNN_` 命名。示例代码不含文字注释，相关说明见开发指南正文。每个实验先启动配套节点，再在另一终端运行示例。
 
-以实验六为例：
+以实验六“SLAM 建图”为例：
 
 终端一
 
@@ -432,21 +431,20 @@ ros2 launch wpr2_tutorials ex06_bringup.launch.py
 终端二
 
 ```bash
-ros2 run wpr2_tutorials ex06_imu_data
+ros2 launch wpr2_tutorials ex06_slam.launch.py
 ```
 
 | 实验 | 内容 | 实验 | 内容 |
 | --- | --- | --- | --- |
-| 01 | ROS2 节点入门 | 11 | 相机安装参数调节 |
-| 02 | 手柄控制 | 12 | 图像显示与 HSV |
-| 03 | 速度控制 | 13 | 人脸检测 |
-| 04 | 雷达数据 | 14 | 三维点云读取 |
-| 05 | 雷达避障 | 15 | 桌面物体检测 |
-| 06 | IMU 数据 | 16 | 双臂、手爪与升降 |
-| 07 | 航向控制 | 17 | 物品抓取 |
-| 08 | SLAM 建图 | 18 | 语音合成 |
-| 09 | Nav2 导航 | 19 | 语音识别 |
-| 10 | 航点导航 | 20 | 导航取物与递送 |
+| 01 | ROS2 节点入门 | 10 | 图像显示与 HSV |
+| 02 | 手柄控制 | 11 | 人脸检测 |
+| 03 | 速度控制 | 12 | 三维点云读取 |
+| 04 | 雷达数据 | 13 | 桌面物体检测 |
+| 05 | 雷达避障 | 14 | 双臂、手爪与升降 |
+| 06 | SLAM 建图 | 15 | 物品抓取 |
+| 07 | Nav2 导航 | 16 | 语音合成 |
+| 08 | 航点导航 | 17 | 语音识别 |
+| 09 | 相机安装参数调节 | 18 | 导航取物与递送 |
 
 完整入口、运行顺序及功能依赖见 [wpr2_tutorials/README.md](wpr2_tutorials/README.md)。
 

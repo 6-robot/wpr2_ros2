@@ -1,6 +1,6 @@
 # wpr2_tutorials（ROS 2 Humble）
 
-WPR2 实验程序，参考现有 ROS2 启智实验源码和实验功能；实验 16 的 `ex16_manipulator.cpp` 由 ROS1 WPR2 的 `wpr2_joints_demo.cpp` 移植而来。本包不包含新的实验指导书。
+WPR2 实验程序，参考现有 ROS2 启智实验源码和实验功能；实验 14 的 `ex14_manipulator.cpp` 由 ROS1 WPR2 的 `wpr2_joints_demo.cpp` 移植而来。本包不包含新的实验指导书。
 
 ## 构建与依赖
 
@@ -18,13 +18,13 @@ ros2 run wpr2_tutorials check_runtime.py
 | 实验 | 额外运行依赖 |
 |---|---|
 | 2 | `joy`、USB 手柄 |
-| 4、5、8—10、17、20 | [Slamtec sllidar_ros2](https://github.com/Slamtec/sllidar_ros2)，默认 C1，460800 波特率 |
-| 8 | `slam_toolbox`、`nav2_map_server`（保存地图） |
-| 9、10、20 | `nav2_bringup`；10、20 还需要 ROS2 `wp_map_tools` |
-| 11—15、17、20 | [OrbbecSDK_ROS2](https://github.com/orbbec/OrbbecSDK_ROS2) 中的 `orbbec_camera`，Femto Bolt |
-| 17、20 | 同目录 `wpr2_behaviors`、`wpr2_msgs` |
-| 13 | Python `face_recognition`、`cv2`、`numpy` |
-| 18、19 | ROS2 `wp_speech`，对应语音模型、扬声器或麦克风 |
+| 4、5、6—8、15、18 | [Slamtec sllidar_ros2](https://github.com/Slamtec/sllidar_ros2)，默认 C1，460800 波特率 |
+| 6 | `slam_toolbox`、`nav2_map_server`（保存地图） |
+| 7、8、18 | `nav2_bringup`；8、18 还需要 ROS2 `wp_map_tools` |
+| 9—13、15、18 | [OrbbecSDK_ROS2](https://github.com/orbbec/OrbbecSDK_ROS2) 中的 `orbbec_camera`，Femto Bolt |
+| 15、18 | 同目录 `wpr2_behaviors`、`wpr2_msgs` |
+| 11 | Python `face_recognition`、`cv2`、`numpy` |
+| 16、17 | ROS2 `wp_speech`，对应语音模型、扬声器或麦克风 |
 
 `check_runtime.py --group base|lidar|camera|face|navigation|speech` 可分组检查，不会打开设备。航点和语音包复用当前环境已安装的 ROS2 包；换机器时需单独提供并 source 其安装环境。缺少可选驱动不影响 C++ 示例编译，但对应硬件入口无法运行。
 
@@ -39,68 +39,65 @@ ros2 run wpr2_tutorials check_runtime.py
 | 03 | 速度控制 | `ex03_bringup.launch.py` | `ex03_velocity` |
 | 04 | 雷达读取 | `ex04_bringup.launch.py` | `ex04_lidar` |
 | 05 | 雷达避障 | `ex05_bringup.launch.py` | `ex05_lidar_behavior` |
-| 06 | IMU 姿态 | `ex06_bringup.launch.py` | `ex06_imu_data` |
-| 07 | 航向锁定 | `ex07_bringup.launch.py` | `ex07_imu_behavior` |
-| 08 | 建图 | `ex08_bringup.launch.py` | `ex08_slam.launch.py`（launch），另开手柄入口操控 |
-| 09 | 导航 | `ex09_bringup.launch.py` | `ex09_navigation.launch.py`（launch，固定读取包内地图） |
-| 10 | 航点导航 | `ex10_bringup.launch.py` | `ex10_map_tools.launch.py`（launch），再运行 `ex10_waypoint` |
-| 11 | 相机与安装参数调节 | `ex11_bringup.launch.py` | GUI 调节 `femto_height`、`femto_pitch` |
-| 12 | 彩色图像、HSV | `ex12_bringup.launch.py` | `ex12_image` 或 `ex12_hsv` |
-| 13 | 人脸检测 | `ex13_bringup.launch.py` | `ex13_face` |
-| 14 | 点云读取 | `ex14_bringup.launch.py` | `ex14_pointcloud` |
-| 15 | 物体检测 | `ex15_bringup.launch.py` | `ex15_objects` |
-| 16 | 双臂、手爪与升降 | `ex16_bringup.launch.py` | `ex16_manipulator` |
-| 17 | 物品抓取 | `ex17_bringup.launch.py` | `ex17_grab`，运行后自动开始一轮检测抓取 |
-| 18 | 语音输出 | `ex18_bringup.launch.py` | `ex18_tts` |
-| 19 | 语音识别 | `ex19_bringup.launch.py` | `ex19_recognition` |
-| 20 | 导航取物与递送 | `ex20_bringup.launch.py` | `ex20_fetch`，定位完成后启动 |
+| 06 | 建图 | `ex06_bringup.launch.py` | `ex06_slam.launch.py`（launch），另开手柄入口操控 |
+| 07 | 导航 | `ex07_bringup.launch.py` | `ex07_navigation.launch.py`（launch，固定读取包内地图） |
+| 08 | 航点导航 | `ex08_bringup.launch.py` | `ex08_map_tools.launch.py`（launch），再运行 `ex08_waypoint` |
+| 09 | 相机与安装参数调节 | `ex09_bringup.launch.py` | GUI 调节 `femto_height`、`femto_pitch` |
+| 10 | 彩色图像、HSV | `ex10_bringup.launch.py` | `ex10_image` 或 `ex10_hsv` |
+| 11 | 人脸检测 | `ex11_bringup.launch.py` | `ex11_face` |
+| 12 | 点云读取 | `ex12_bringup.launch.py` | `ex12_pointcloud` |
+| 13 | 物体检测 | `ex13_bringup.launch.py` | `ex13_objects` |
+| 14 | 双臂、手爪与升降 | `ex14_bringup.launch.py` | `ex14_manipulator` |
+| 15 | 物品抓取 | `ex15_bringup.launch.py` | `ex15_grab`，运行后自动开始一轮检测抓取 |
+| 16 | 语音输出 | `ex16_bringup.launch.py` | `ex16_tts` |
+| 17 | 语音识别 | `ex17_bringup.launch.py` | `ex17_recognition` |
+| 18 | 导航取物与递送 | `ex18_bringup.launch.py` | `ex18_fetch`，定位完成后启动 |
 
-实验 17 启动 `wpr2_core`、机器人 TF、Femto Bolt、C1 雷达及滤波、自动物体检测和 RViz；抓取示例单独启动。点云使用 `/camera/depth_registered/points`，检测结果为 `/wpr2/objects_3d`（`wpr2_msgs/Object`）。实验 20 进一步加入 Nav2、航点服务和 `wpr2_grab`，由单独运行的 `ex20_fetch` 调度任务。
+实验 15 启动 `wpr2_core`、机器人 TF、Femto Bolt、C1 雷达及滤波、自动物体检测和 RViz；抓取示例单独启动。点云使用 `/camera/depth_registered/points`，检测结果为 `/wpr2/objects_3d`（`wpr2_msgs/Object`）。实验 18 进一步加入 Nav2、航点服务和 `wpr2_grab`，由单独运行的 `ex18_fetch` 调度任务。
 
-各实验 launch 直接列出节点、固定配置和启动顺序，示例代码不含文字注释。串口（底盘 `/dev/ftdi`、雷达 `/dev/rplidar`）、配置文件、传感器及 RViz 设置写在对应文件中；需要调整时修改该文件。原通用启动开关已移除。实验 1、11 默认启动关节滑块；实验 11 不启动底盘；实验 18、19 只启动语音依赖。单机器人保持空命名空间，使用真实时钟 `use_sim_time=False`。
+各实验 launch 直接列出节点、固定配置和启动顺序，示例代码不含文字注释。串口（底盘 `/dev/ftdi`、雷达 `/dev/rplidar`）、配置文件、传感器及 RViz 设置写在对应文件中；需要调整时修改该文件。原通用启动开关已移除。实验 1、9 默认启动关节滑块；实验 9 不启动底盘；实验 16、17 只启动语音依赖。单机器人保持空命名空间，使用真实时钟 `use_sim_time=False`。
 
-实验 8—10 的 bringup 只启动硬件，第二个 launch 启动算法和 RViz，避免重复打开窗口。`slam.launch.py`、`navigation.launch.py` 分别是 `ex08_slam.launch.py`、`ex09_navigation.launch.py` 的兼容入口，均需先单独启动硬件。实验9和10固定读取 `wpr2_tutorials/maps/map.yaml`，由 YAML 中的 `image: map.pgm` 加载同目录图像，不设置启动参数或额外文件检查；保存或更新地图后重新编译，将地图安装到包共享目录。实验10还固定读取 `~/waypoints.xml`，不设置启动参数或额外文件检查。实验20同样固定读取包内 `maps/map.yaml` 和 `~/waypoints.xml`，无需设置启动参数，保留相关文件检查。
+实验 6—8 的 bringup 只启动硬件，第二个 launch 启动算法和 RViz，避免重复打开窗口。`slam.launch.py`、`navigation.launch.py` 分别是 `ex06_slam.launch.py`、`ex07_navigation.launch.py` 的兼容入口，均需先单独启动硬件。实验7和8固定读取 `wpr2_tutorials/maps/map.yaml`，由 YAML 中的 `image: map.pgm` 加载同目录图像，不设置启动参数或额外文件检查；保存或更新地图后重新编译，将地图安装到包共享目录。实验8还固定读取 `~/waypoints.xml`，不设置启动参数或额外文件检查。实验18同样固定读取包内 `maps/map.yaml` 和 `~/waypoints.xml`，无需设置启动参数，保留相关文件检查。
 
 ## 示例代码约定
 
-示例参考 WPB 同类实验，使用全局变量、独立回调、main 和步骤编号展示流程。速度、距离、阈值、姿态与等待时间集中在各源码顶部，含义和单位见开发指南正文；修改后重新编译 `wpr2_tutorials`。不再使用教程专用 ROS 参数或 `config/ex17_grab.yaml`，话题仍可用 ROS 重映射调整。
+示例参考 WPB 同类实验，使用全局变量、独立回调、main 和步骤编号展示流程。速度、距离、阈值、姿态与等待时间集中在各源码顶部，含义和单位见开发指南正文；修改后重新编译 `wpr2_tutorials`。不再使用教程专用 ROS 参数或 `config/ex15_grab.yaml`，话题仍可用 ROS 重映射调整。
 
-- 底盘使用 `/cmd_vel`，驱动的 1 秒指令超时及串口换算保持现状。实验 3 按 30 Hz 连续发送速度；实验 5、7 每收到一帧传感器数据就发送一次，不重发停止更新的测量。手柄由驱动配套节点保持 20 Hz 重发。
+- 底盘使用 `/cmd_vel`，驱动的 1 秒指令超时及串口换算保持现状。实验 3 按 30 Hz 连续发送速度；实验 5 每收到一帧传感器数据就发送一次，不重发停止更新的测量。手柄由驱动配套节点保持 20 Hz 重发。
 - 实验 4、5 按扫描角度寻找车头方向。WPR2 的雷达相对底盘旋转 180°，源码 `forward_angle=M_PI`；更换安装方向需修改该常量。避障距离 1.5 m、直行速度 0.1 m/s、左转速度 0.3 rad/s、转向持续20帧（C1默认10 Hz，约2 s）。该示例只检查正前方，不是完整导航器。
-- 实验 6、7 的 launch 开启 `imu_pub`，订阅 `/imu/data_raw`。实验 7 目标航向 90°，前进速度 0.1 m/s，角速度直接由角差乘0.01得到，角差跨 ±180° 环绕，不另加限速。
-- 图像使用 `/camera/color/image_raw`，点云使用 `/camera/depth_registered/points`；传感器订阅和配套 RViz 使用 Best Effort / Volatile QoS。实验 12、13 直接打开图像窗口；实验 14 逐点打印当前帧坐标。
-- 实验 11 不启动底盘，仅用关节滑块显示标定。先设置实际 `chest_height`，再调节 `femto_height`、`femto_pitch`；它们是相机安装偏移，单位分别为 m、rad。把结果写入所用 `wpr2.yaml` 的 `zeros`，重启复核。标定窗口不能与驱动同时发布 `/joint_states`。
-- 实验 15 展示坐标变换、裁剪、平面分割、聚类和质心计算，发布 `/wpr2/objects`（`geometry_msgs/PoseArray`）及 `/objects_marker`。计算坐标系为 `base_footprint`，物体最小桌面高度差为0.02 m；姿态为单位四元数，不代表估计了物体朝向。
-- Nav2 使用全向底盘配置。footprint 覆盖底盘并留5 cm边距，运行前按收拢后的双臂和物品实际外廓调整。地图统一保存到 `~/ros2_ws/src/wpr2_ros2/wpr2_tutorials/maps/map.yaml` 和同目录的 `map.pgm`，更新后重新编译并加载环境；航点由 `wp_map_tools` 编辑保存。实验10默认请求航点 `1`，更改源码顶部的 `waypoint` 可换目标。
+- 图像使用 `/camera/color/image_raw`，点云使用 `/camera/depth_registered/points`；传感器订阅和配套 RViz 使用 Best Effort / Volatile QoS。实验 10、11 直接打开图像窗口；实验 12 逐点打印当前帧坐标。
+- 实验 9 不启动底盘，仅用关节滑块显示标定。先设置实际 `chest_height`，再调节 `femto_height`、`femto_pitch`；它们是相机安装偏移，单位分别为 m、rad。把结果写入所用 `wpr2.yaml` 的 `zeros`，重启复核。标定窗口不能与驱动同时发布 `/joint_states`。
+- 实验 13 展示坐标变换、裁剪、平面分割、聚类和质心计算，发布 `/wpr2/objects`（`geometry_msgs/PoseArray`）及 `/objects_marker`。计算坐标系为 `base_footprint`，物体最小桌面高度差为0.02 m；姿态为单位四元数，不代表估计了物体朝向。
+- Nav2 使用全向底盘配置。footprint 覆盖底盘并留5 cm边距，运行前按收拢后的双臂和物品实际外廓调整。地图统一保存到 `~/ros2_ws/src/wpr2_ros2/wpr2_tutorials/maps/map.yaml` 和同目录的 `map.pgm`，更新后重新编译并加载环境；航点由 `wp_map_tools` 编辑保存。实验8默认请求航点 `1`，更改源码顶部的 `waypoint` 可换目标。
 
-教程层按 WPB 同类实验去掉额外检查：不校验雷达范围或 IMU 姿态，不捕获图像转换异常，不检查人脸框边界，不另设速度或升降限幅，不添加任务失败处理。仍保留 WPB 已有的算法判断，如 HSV 目标像素计数、点云 TF 可用性和平面点数、抓取步骤与本轮检测结果判断。雷达示例按 C1 正常输出的完整一圈扫描计算前方索引。没有检测结果或里程计清零反馈时会等待，不会自动报超时。退出使用标准 ROS 流程，不保证示例发送最后的停车指令；底盘驱动仍有1秒指令超时，已发送的机械臂动作可能继续完成。不要同时运行多个主动控制程序。
+教程层按 WPB 同类实验去掉额外检查：不校验雷达范围，不捕获图像转换异常，不检查人脸框边界，不另设速度或升降限幅，不添加任务失败处理。仍保留 WPB 已有的算法判断，如 HSV 目标像素计数、点云 TF 可用性和平面点数、抓取步骤与本轮检测结果判断。雷达示例按 C1 正常输出的完整一圈扫描计算前方索引。没有检测结果或里程计清零反馈时会等待，不会自动报超时。退出使用标准 ROS 流程，不保证示例发送最后的停车指令；底盘驱动仍有1秒指令超时，已发送的机械臂动作可能继续完成。不要同时运行多个主动控制程序。
 
-### 实验 16
+### 实验 14
 
 ```bash
-ros2 launch wpr2_tutorials ex16_bringup.launch.py
+ros2 launch wpr2_tutorials ex14_bringup.launch.py
 ```
 
 另一终端：启动后会交替驱动双臂、双手爪和升降
 
 ```bash
-ros2 run wpr2_tutorials ex16_manipulator
+ros2 run wpr2_tutorials ex14_manipulator
 ```
 
 保留 ROS1 两组双臂姿态、升降高度0.65/0.7 m、手爪开度0.05/0.1 m及5秒切换周期。启动后等待1秒，随后直接交替发送五组控制话题，不订阅关节反馈；运行前应先确认配套驱动已正常工作。
 
 关节指令用 rad，升降及手爪开度用 m；`velocity` 为控制器速度数值，升降15000，其他2000，不是标准 rad/s 或 m/s。
 
-### 实验 17
+### 实验 15
 
 ```bash
-ros2 launch wpr2_tutorials ex17_bringup.launch.py
+ros2 launch wpr2_tutorials ex15_bringup.launch.py
 ```
 
 另一终端：默认自动开始一次抓取，机器人会运动。
 
 ```bash
-ros2 run wpr2_tutorials ex17_grab
+ros2 run wpr2_tutorials ex15_grab
 ```
 
 程序直接发布 WPR2 控制话题，流程为：观测姿态 → 检测 → 调整升降 → 平移对准 → 停车重新检测 → 准备右臂 → 前进 → 合爪 → 抬物 → 恢复升降 → 后退 → 折臂持物。
@@ -111,12 +108,12 @@ ros2 run wpr2_tutorials ex17_grab
 
 启动后只执行一轮，完成时发布一次 `/wpr2/grab_result` 的 `grab done`，并停止发送速度。已移除目标坐标、开始/停止指令和状态话题接口；重新运行程序可再做一次。请勿与 `wpr2_behaviors/wpr2_grab` 同时运行。
 
-### 实验 20
+### 实验 18
 
-先将当前场地地图保存到 `wpr2_tutorials/maps/map.yaml` 及其引用的图片文件，重新编译并加载工作空间环境；将包含 `kitchen`、`guest` 的航点 XML 保存为 `~/waypoints.xml`。`kitchen` 应位于可检测和对准桌面物体的位置，目标高度和抓取姿态需沿用实验 17 的实物标定。
+先将当前场地地图保存到 `wpr2_tutorials/maps/map.yaml` 及其引用的图片文件，重新编译并加载工作空间环境；将包含 `kitchen`、`guest` 的航点 XML 保存为 `~/waypoints.xml`。`kitchen` 应位于可检测和对准桌面物体的位置，目标高度和抓取姿态需沿用实验 15 的实物标定。
 
 ```bash
-ros2 launch wpr2_tutorials ex20_bringup.launch.py
+ros2 launch wpr2_tutorials ex18_bringup.launch.py
 ```
 
 在 RViz 中用 2D Pose Estimate 完成定位，确认机器人位置和地图一致。
@@ -124,7 +121,7 @@ ros2 launch wpr2_tutorials ex20_bringup.launch.py
 另一终端：程序运行后自动开始任务，机器人会运动。
 
 ```bash
-ros2 run wpr2_tutorials ex20_fetch
+ros2 run wpr2_tutorials ex18_fetch
 ```
 
 流程为 `kitchen` 导航 → WPR2 对准抓取、抬起、后退、折臂持物 → `guest` 导航 → 停车持物。到达终点不自动张爪。配套 launch 中检测和抓取节点均默认空闲，任务程序只通过 `/waterplus/navi_waypoint`、`/waterplus/navi_result`、`/wpr2/behavior` 和 `/wpr2/grab_result` 调度，不重复实现抓取动作。
@@ -141,6 +138,6 @@ colcon test --packages-select wpr2_tutorials --event-handlers console_direct+
 colcon test-result --test-result-base build/wpr2_tutorials --verbose
 ```
 
-自动测试使用独立 DDS 域、重映射话题和模拟输入，不连接机器人。覆盖雷达方向与持续转向、IMU环绕、双臂两组消息、图像及点云处理、航点和语音接口，以及各 launch 的节点、配置和传感器QoS。图像窗口使用离屏环境；实验17从实际 launch 中只启动检测节点，配合虚拟底盘验证默认固定等待、重新检测及整轮抓取；实验20覆盖调度顺序、实际WPR2检测抓取，以及已安装航点服务配合模拟Nav2的两段导航。实验17按真实默认等待时间运行，完整测试需要数分钟。
+自动测试使用独立 DDS 域、重映射话题和模拟输入，不连接机器人。覆盖雷达方向与持续转向、双臂两组消息、图像及点云处理、航点和语音接口，以及各 launch 的节点、配置和传感器QoS。图像窗口使用离屏环境；实验15从实际 launch 中只启动检测节点，配合虚拟底盘验证默认固定等待、重新检测及整轮抓取；实验18覆盖调度顺序、实际WPR2检测抓取，以及已安装航点服务配合模拟Nav2的两段导航。实验15按真实默认等待时间运行，完整测试需要数分钟。
 
-实物雷达、Femto Bolt、IMU、机械臂、导航和音频效果需要现场联调；自动测试不代替实机验证。
+实物雷达、Femto Bolt、机械臂、导航和音频效果需要现场联调；自动测试不代替实机验证。

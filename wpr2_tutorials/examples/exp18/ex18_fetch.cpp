@@ -40,7 +40,7 @@ void GrabResultCallback(const std_msgs::msg::String::SharedPtr msg)
 int main(int argc, char ** argv)
 {
     rclcpp::init(argc, argv);
-    node = std::make_shared<rclcpp::Node>("ex20_fetch");
+    node = std::make_shared<rclcpp::Node>("ex18_fetch");
     navi_pub = node->create_publisher<std_msgs::msg::String>("/waterplus/navi_waypoint", 10);
     behavior_pub = node->create_publisher<std_msgs::msg::String>("/wpr2/behavior", 10);
     auto navi_sub = node->create_subscription<std_msgs::msg::String>("/waterplus/navi_result", 10, NaviResultCallback);

@@ -2,61 +2,19 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import EmitEvent
-from launch.events import Shutdown
-from launch.substitutions import Command
-from launch_ros.actions import Node
-from launch_ros.parameter_descriptions import ParameterValue
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
-    bringup_dir = get_package_share_directory('wpr2_bringup')
-    config_file = os.path.join(bringup_dir, 'config', 'wpr2.yaml')
-    model_file = os.path.join(
-        get_package_share_directory('wpr2_description'), 'urdf', 'wpr2.urdf.xacro')
-    rviz_file = os.path.join(
-        get_package_share_directory('wpr2_tutorials'), 'rviz', 'sensor.rviz')
-
-
-    wpr2_core_cmd = Node(
-        package='wpr2_bringup',
-        executable='wpr2_core',
-        name='wpr2_core',
-        output='screen',
-        parameters=[config_file, {
-            'serial_port': '/dev/ftdi',
-            'publish_odom_tf': True,
-            'odom_frame': 'odom',
-            'base_frame': 'base_footprint',
-            'imu_frame': 'imu',
-            'use_sim_time': False,
-        }],
-        on_exit=[EmitEvent(event=Shutdown(reason='wpr2_core exited'))],
-    )
-
-
-    robot_state_publisher_cmd = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output='screen',
-        parameters=[{
-            'robot_description': ParameterValue(Command(['xacro ', model_file]), value_type=str),
-            'use_sim_time': False,
-        }],
-    )
-
-
-    rviz_cmd = Node(
-        package='rviz2',
-        executable='rviz2',
-        arguments=['-d', rviz_file],
-        parameters=[{'use_sim_time': False}],
+    launch_file = os.path.join(
+        get_package_share_directory('wp_speech'), 'launch', 'tts.launch.py')
+    include_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(launch_file),
     )
 
     ld = LaunchDescription()
 
-    ld.add_action(wpr2_core_cmd)
-    ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(rviz_cmd)
+    ld.add_action(include_cmd)
 
     return ld

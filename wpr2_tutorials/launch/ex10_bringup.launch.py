@@ -2,8 +2,9 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import EmitEvent
+from launch.actions import EmitEvent, IncludeLaunchDescription
 from launch.events import Shutdown
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
@@ -14,6 +15,8 @@ def generate_launch_description():
     config_file = os.path.join(bringup_dir, 'config', 'wpr2.yaml')
     model_file = os.path.join(
         get_package_share_directory('wpr2_description'), 'urdf', 'wpr2.urdf.xacro')
+    rviz_file = os.path.join(
+        get_package_share_directory('wpr2_tutorials'), 'rviz', 'sensor.rviz')
 
 
     wpr2_core_cmd = Node(
@@ -44,37 +47,24 @@ def generate_launch_description():
     )
 
 
-    lidar_cmd = Node(
-        package='sllidar_ros2',
-        executable='sllidar_node',
-        output='screen',
-        parameters=[{
-            'channel_type': 'serial',
-            'serial_port': '/dev/rplidar',
-            'serial_baudrate': 460800,
-            'frame_id': 'laser',
-            'inverted': False,
-            'angle_compensate': True,
-            'scan_frequency': 10.0,
-            'scan_mode': 'Standard',
-            'use_sim_time': False,
-        }],
-        remappings=[('scan', 'scan_raw')],
+    femto_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(
+            bringup_dir, 'launch', 'include', 'start_femto_bolt.launch.py')),
     )
 
 
-    lidar_filter_cmd = Node(
-        package='wpr2_bringup',
-        executable='wpr2_lidar_filter',
-        output='screen',
-        parameters=[{'pub_topic': '/scan', 'use_sim_time': False}],
+    rviz_cmd = Node(
+        package='rviz2',
+        executable='rviz2',
+        arguments=['-d', rviz_file],
+        parameters=[{'use_sim_time': False}],
     )
 
     ld = LaunchDescription()
 
     ld.add_action(wpr2_core_cmd)
     ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(lidar_cmd)
-    ld.add_action(lidar_filter_cmd)
+    ld.add_action(femto_cmd)
+    ld.add_action(rviz_cmd)
 
     return ld

@@ -15,12 +15,12 @@ from rclpy.context import Context
 from rclpy.executors import SingleThreadedExecutor
 from rclpy.qos import qos_profile_sensor_data
 from geometry_msgs.msg import PoseArray, Twist
-from sensor_msgs.msg import Imu, JointState, LaserScan, Image, RegionOfInterest, PointCloud2, PointField
+from sensor_msgs.msg import JointState, LaserScan, Image, RegionOfInterest, PointCloud2, PointField
 from std_msgs.msg import String
 from visualization_msgs.msg import MarkerArray
 
 TOPICS = ['/camera/depth_registered/points', '/objects_marker', '/wpr2/objects',
-          '/cmd_vel', '/scan', '/imu/data_raw', '/joint_states',
+          '/cmd_vel', '/scan', '/joint_states',
           '/wpr2/chest_height', '/wpr2/left_arm', '/wpr2/right_arm',
           '/wpr2/left_gripper', '/wpr2/right_gripper',
           '/camera/color/image_raw', '/face_detector_input', '/face_position',
@@ -163,34 +163,11 @@ def test_lidar_readout_uses_wpr2_forward_heading(h, layout):
            tick=lambda: pub.publish(scan_with_front(0.4, layout, rear=3.0)))
 
 
-def test_imu_readout_and_wrapped_control(h):
-    pub = h.publisher(Imu, '/imu/data_raw', sensor=True)
-    values = h.collect(Twist, '/cmd_vel')
-    h.start('ex06_imu_data')
-    h.start('ex07_imu_behavior')
-    h.wait(lambda: pub.get_subscription_count() == 2)
-    msg = Imu()
-    # 目标90度，当前-179度：环绕后误差-91度，应向负方向转动。
-    msg.orientation.z = math.sin(math.radians(-179) / 2)
-    msg.orientation.w = math.cos(math.radians(-179) / 2)
-    h.wait(lambda: values and values[-1].angular.z == pytest.approx(-0.91),
-           tick=lambda: pub.publish(msg))
-    msg.orientation.z = math.sin(math.radians(89) / 2)
-    msg.orientation.w = math.cos(math.radians(89) / 2)
-    h.wait(lambda: values[-1].angular.z == pytest.approx(0.01, abs=1e-6),
-           tick=lambda: pub.publish(msg))
-    assert values[-1].linear.x == 0.1
-    assert 'yaw=89.0 deg' in Path(h.processes[-2][1].name).read_text()
-    h.pump(0.1)
-    count = len(values)
-    h.pump(0.2)
-    assert len(values) == count
-
 
 def test_joint_demo_matches_ros1_two_poses(h):
     topics = ['chest_height', 'left_arm', 'left_gripper', 'right_arm', 'right_gripper']
     commands = {name: h.collect(JointState, '/wpr2/' + name) for name in topics}
-    process = h.start('ex16_manipulator')
+    process = h.start('ex14_manipulator')
     # 不提供关节反馈；教学示例直接以5秒周期发两组指令。
     h.wait(lambda: all(len(v) >= 2 for v in commands.values()), timeout=8)
     assert commands['left_arm'][0].position == pytest.approx([0.5, -1.57, 0, -1.16, 0, 0])
@@ -213,7 +190,7 @@ def test_face_image_forwarding_and_rectangle(h):
     images = h.publisher(Image, '/camera/color/image_raw', sensor=True)
     rois = h.publisher(RegionOfInterest, '/face_position')
     forwarded = h.collect(Image, '/face_detector_input')
-    process = h.start('ex13_face')
+    process = h.start('ex11_face')
     h.wait(lambda: images.get_subscription_count() > 0 and rois.get_subscription_count() > 0)
     msg = Image(height=8, width=8, encoding='bgr8', step=24, data=bytes(192))
     h.wait(lambda: forwarded, tick=lambda: images.publish(msg))
@@ -222,7 +199,7 @@ def test_face_image_forwarding_and_rectangle(h):
     assert forwarded[0].width == 8 and process.poll() is None
 
 
-@pytest.mark.parametrize('executable', ['ex12_image', 'ex12_hsv'])
+@pytest.mark.parametrize('executable', ['ex10_image', 'ex10_hsv'])
 def test_image_display_with_valid_frame(h, executable):
     images = h.publisher(Image, '/camera/color/image_raw', sensor=True)
     process = h.start(executable)
@@ -235,7 +212,7 @@ def test_image_display_with_valid_frame(h, executable):
 def test_waypoint_request_and_result(h):
     requests = h.collect(String, '/waterplus/navi_waypoint')
     results = h.publisher(String, '/waterplus/navi_result')
-    process = h.start('ex10_waypoint')
+    process = h.start('ex08_waypoint')
     h.wait(lambda: requests)
     assert requests[0].data == '1'
     h.wait(lambda: results.get_subscription_count() > 0)
@@ -259,7 +236,7 @@ def make_cloud(frame='base_footprint'):
 
 def test_pointcloud_readout_uses_driver_topic(h):
     pub = h.publisher(PointCloud2, '/camera/depth_registered/points', sensor=True)
-    process = h.start('ex14_pointcloud')
+    process = h.start('ex12_pointcloud')
     log = Path(h.processes[-1][1].name)
     cloud = make_cloud()
     h.wait(lambda: pub.get_subscription_count() > 0)
@@ -272,7 +249,7 @@ def test_pointcloud_detection_and_wpb_tf_check(h):
     pub = h.publisher(PointCloud2, '/camera/depth_registered/points', sensor=True)
     results = h.collect(PoseArray, '/wpr2/objects')
     markers = h.collect(MarkerArray, '/objects_marker')
-    process = h.start('ex15_objects')
+    process = h.start('ex13_objects')
     cloud = make_cloud()
     h.wait(lambda: pub.get_subscription_count() > 0)
     h.wait(lambda: any(m.poses for m in results), tick=lambda: pub.publish(cloud))
@@ -292,13 +269,13 @@ def test_pointcloud_detection_and_wpb_tf_check(h):
 
 def test_speech_interfaces(h):
     text = h.collect(String, '/tts/text')
-    process = h.start('ex18_tts')
+    process = h.start('ex16_tts')
     h.wait(lambda: text)
     assert 'WPR2' in text[0].data
     h.wait(lambda: process.poll() is not None)
     assert process.returncode == 0
     recognition = h.publisher(String, '/speech/text')
-    h.start('ex19_recognition')
+    h.start('ex17_recognition')
     h.wait(lambda: recognition.get_subscription_count() > 0)
     recognition.publish(String(data='测试识别'))
     h.wait(lambda: '测试识别' in Path(h.processes[-1][1].name).read_text())

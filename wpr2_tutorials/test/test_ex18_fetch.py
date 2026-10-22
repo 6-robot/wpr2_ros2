@@ -9,7 +9,7 @@ from geometry_msgs.msg import Twist
 from sensor_msgs.msg import PointCloud2
 from std_msgs.msg import String
 
-from test_ex17_grab import Harness, Robot, make_cloud, publish_cloud
+from test_ex15_grab import Harness, Robot, make_cloud, publish_cloud
 
 
 @pytest.fixture
@@ -31,7 +31,7 @@ class Interfaces:
         self.grab_result = h.publisher(String, '/wpr2/grab_result')
 
     def start(self):
-        self.process = self.h.start('ex20_fetch')
+        self.process = self.h.start('ex18_fetch')
         return self.process
 
     def nav(self, text):
@@ -48,7 +48,7 @@ class Interfaces:
 
 
 def fetch_done(h):
-    return 'fetch done' in (h.tmp_path / 'ex20_fetch.log').read_text()
+    return 'fetch done' in (h.tmp_path / 'ex18_fetch.log').read_text()
 
 
 def test_fetch_stage_order_duplicates_and_release(h):
@@ -75,7 +75,7 @@ def test_fetch_stage_order_duplicates_and_release(h):
     h.pump(0.25)
     assert [m.data for m in io.navigation] == ['kitchen', 'guest']
     assert [m.data for m in io.commands] == ['start grab']
-    assert (h.tmp_path / 'ex20_fetch.log').read_text().count('fetch done') == 1
+    assert (h.tmp_path / 'ex18_fetch.log').read_text().count('fetch done') == 1
     assert not io.velocities  # Dispatcher never competes with navigation or grab cmd_vel.
 
 
@@ -91,7 +91,7 @@ def test_fetch_with_real_wpr2_detection_and_grab(h):
     h.wait(lambda: clouds.get_subscription_count() > 0 and robot.goal_pub.get_subscription_count() > 0)
     navigation = h.collect(String, '/waterplus/navi_waypoint')
     nav_result = h.publisher(String, '/waterplus/navi_result')
-    h.start('ex20_fetch')
+    h.start('ex18_fetch')
     h.wait(lambda: navigation)
     assert [msg.data for msg in navigation] == ['kitchen'] and not any(robot.arm_commands.values())
     nav_result.publish(String(data='navi done'))
@@ -110,7 +110,7 @@ def test_fetch_with_real_wpr2_detection_and_grab(h):
     assert [msg.data for msg in navigation] == ['kitchen', 'guest']
     assert support.poll() is None
     names = h.node.get_node_names()
-    assert 'wpr2_grab' in names and 'wpr2_objects_3d' in names and 'ex17_grab' not in names
+    assert 'wpr2_grab' in names and 'wpr2_objects_3d' in names and 'ex15_grab' not in names
     h.pump(0.3)
     count = len(robot.velocities)
     h.pump(0.2)

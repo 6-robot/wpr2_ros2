@@ -134,7 +134,7 @@ void ResetOdometry(int next_step)
 int main(int argc, char ** argv)
 {
     rclcpp::init(argc, argv);
-    node = std::make_shared<rclcpp::Node>("ex17_grab");
+    node = std::make_shared<rclcpp::Node>("ex15_grab");
     cmd_pub = node->create_publisher<std_msgs::msg::String>("/wpr2/behavior", 10);
     ctrl_pub = node->create_publisher<std_msgs::msg::String>("/odom_delta_reset", 10);
     result_pub = node->create_publisher<std_msgs::msg::String>("/wpr2/grab_result", 10);

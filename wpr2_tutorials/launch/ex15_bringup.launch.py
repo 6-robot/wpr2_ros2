@@ -16,7 +16,9 @@ def generate_launch_description():
     model_file = os.path.join(
         get_package_share_directory('wpr2_description'), 'urdf', 'wpr2.urdf.xacro')
     rviz_file = os.path.join(
-        get_package_share_directory('wpr2_tutorials'), 'rviz', 'sensor.rviz')
+        get_package_share_directory('wpr2_behaviors'), 'rviz', 'objects.rviz')
+    behaviors_file = os.path.join(
+        get_package_share_directory('wpr2_behaviors'), 'config', 'behaviors.yaml')
 
 
     wpr2_core_cmd = Node(
@@ -47,9 +49,45 @@ def generate_launch_description():
     )
 
 
+    lidar_cmd = Node(
+        package='sllidar_ros2',
+        executable='sllidar_node',
+        output='screen',
+        parameters=[{
+            'channel_type': 'serial',
+            'serial_port': '/dev/rplidar',
+            'serial_baudrate': 460800,
+            'frame_id': 'laser',
+            'inverted': False,
+            'angle_compensate': True,
+            'scan_frequency': 10.0,
+            'scan_mode': 'Standard',
+            'use_sim_time': False,
+        }],
+        remappings=[('scan', 'scan_raw')],
+    )
+
+
+    lidar_filter_cmd = Node(
+        package='wpr2_bringup',
+        executable='wpr2_lidar_filter',
+        output='screen',
+        parameters=[{'pub_topic': '/scan', 'use_sim_time': False}],
+    )
+
+
     femto_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(
             bringup_dir, 'launch', 'include', 'start_femto_bolt.launch.py')),
+    )
+
+
+    objects_3d_cmd = Node(
+        package='wpr2_behaviors',
+        executable='wpr2_objects_3d',
+        name='wpr2_objects_3d',
+        output='screen',
+        parameters=[behaviors_file, {'use_sim_time': False, 'auto_start': True}],
     )
 
 
@@ -64,7 +102,10 @@ def generate_launch_description():
 
     ld.add_action(wpr2_core_cmd)
     ld.add_action(robot_state_publisher_cmd)
+    ld.add_action(lidar_cmd)
+    ld.add_action(lidar_filter_cmd)
     ld.add_action(femto_cmd)
+    ld.add_action(objects_3d_cmd)
     ld.add_action(rviz_cmd)
 
     return ld

@@ -1,4 +1,4 @@
-"""Run experiment 17 against synthetic perception and a simulated WPR2 driver."""
+"""Run experiment 15 against synthetic perception and a simulated WPR2 driver."""
 import math
 import os
 from pathlib import Path
@@ -204,7 +204,7 @@ class Robot:
         self.object_pub.publish(msg)
 
     def start(self):
-        self.process = self.h.start('ex17_grab')
+        self.process = self.h.start('ex15_grab')
         self.h.wait(lambda: self.object_pub.get_subscription_count() > 0)
 
     def goal(self, x=0.9, y=0.08, z=0.9):
@@ -249,7 +249,7 @@ def publish_cloud(h, pub, cloud):
 
 
 def start_support_launch(h):
-    log = open(h.tmp_path / 'ex17_bringup.log', 'w+')
+    log = open(h.tmp_path / 'ex15_bringup.log', 'w+')
     process = subprocess.Popen(
         [sys.executable, str(Path(__file__).with_name('run_detection_launch.py'))],
         env=h.env, stdout=log, stderr=subprocess.STDOUT, start_new_session=True)
@@ -257,7 +257,7 @@ def start_support_launch(h):
     return process
 
 
-def test_ex17_launch_and_autonomous_grab_sequence(h):
+def test_ex15_launch_and_autonomous_grab_sequence(h):
     # The launch has absolute topic names; a private DDS domain isolates this test.
     h.prefix = ''
     robot = Robot(h)
@@ -275,7 +275,7 @@ def test_ex17_launch_and_autonomous_grab_sequence(h):
     h.wait(robot.done, timeout=200, tick=frame)
     assert not robot.failed() and support.poll() is None
     names = h.node.get_node_names()
-    assert 'ex17_grab' in names and 'wpr2_objects_3d' in names
+    assert 'ex15_grab' in names and 'wpr2_objects_3d' in names
     assert 'wpr2_grab' not in names
     assert [m.data for m in robot.results] == ['grab done']
     assert sum(m.data == 'start objects' for m in robot.commands) >= 2

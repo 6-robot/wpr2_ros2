@@ -53,14 +53,6 @@ def generate_launch_description():
     )
 
 
-    face_detector_cmd = Node(
-        package='wpr2_tutorials',
-        executable='face_detector.py',
-        output='screen',
-        parameters=[{'use_sim_time': False}],
-    )
-
-
     rviz_cmd = Node(
         package='rviz2',
         executable='rviz2',
@@ -73,7 +65,6 @@ def generate_launch_description():
     ld.add_action(wpr2_core_cmd)
     ld.add_action(robot_state_publisher_cmd)
     ld.add_action(femto_cmd)
-    ld.add_action(face_detector_cmd)
     ld.add_action(rviz_cmd)
 
     return ld

@@ -1,4 +1,4 @@
-"""Run ex20's real detector and grabber with fast simulated-robot timing only."""
+"""Run ex18's real detector and grabber with fast simulated-robot timing only."""
 import os
 
 from ament_index_python.packages import get_package_share_directory
@@ -12,7 +12,7 @@ from launch_ros.utilities import normalize_parameters
 def main():
     context = LaunchContext()
     source = PythonLaunchDescriptionSource(os.path.join(
-        get_package_share_directory('wpr2_tutorials'), 'launch', 'ex20_bringup.launch.py'))
+        get_package_share_directory('wpr2_tutorials'), 'launch', 'ex18_bringup.launch.py'))
     actions = []
     for action in source.get_launch_description(context).entities:
         if not isinstance(action, Node):
@@ -30,7 +30,7 @@ def main():
             }]))
         actions.append(action)
     if len(actions) != 2:
-        raise RuntimeError('ex20 must directly define the detector and grabber')
+        raise RuntimeError('ex18 must directly define the detector and grabber')
     service = LaunchService(argv=[], noninteractive=True)
     service.include_launch_description(LaunchDescription(actions))
     return service.run()

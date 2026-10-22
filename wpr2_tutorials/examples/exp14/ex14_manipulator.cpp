@@ -16,7 +16,7 @@ const double grip_pose_1 = 0.05, grip_pose_2 = 0.1;
 int main(int argc, char ** argv)
 {
     rclcpp::init(argc, argv);
-    auto node = std::make_shared<rclcpp::Node>("ex16_manipulator");
+    auto node = std::make_shared<rclcpp::Node>("ex14_manipulator");
     auto chest_pub = node->create_publisher<sensor_msgs::msg::JointState>("/wpr2/chest_height", 10);
     auto left_pub = node->create_publisher<sensor_msgs::msg::JointState>("/wpr2/left_arm", 10);
     auto right_pub = node->create_publisher<sensor_msgs::msg::JointState>("/wpr2/right_arm", 10);

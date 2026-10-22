@@ -14,8 +14,6 @@ def generate_launch_description():
     config_file = os.path.join(bringup_dir, 'config', 'wpr2.yaml')
     model_file = os.path.join(
         get_package_share_directory('wpr2_description'), 'urdf', 'wpr2.urdf.xacro')
-    rviz_file = os.path.join(
-        get_package_share_directory('wpr2_tutorials'), 'rviz', 'sensor.rviz')
 
 
     wpr2_core_cmd = Node(
@@ -29,7 +27,6 @@ def generate_launch_description():
             'odom_frame': 'odom',
             'base_frame': 'base_footprint',
             'imu_frame': 'imu',
-            'imu_pub': True,
             'use_sim_time': False,
         }],
         on_exit=[EmitEvent(event=Shutdown(reason='wpr2_core exited'))],
@@ -47,17 +44,37 @@ def generate_launch_description():
     )
 
 
-    rviz_cmd = Node(
-        package='rviz2',
-        executable='rviz2',
-        arguments=['-d', rviz_file],
-        parameters=[{'use_sim_time': False}],
+    lidar_cmd = Node(
+        package='sllidar_ros2',
+        executable='sllidar_node',
+        output='screen',
+        parameters=[{
+            'channel_type': 'serial',
+            'serial_port': '/dev/rplidar',
+            'serial_baudrate': 460800,
+            'frame_id': 'laser',
+            'inverted': False,
+            'angle_compensate': True,
+            'scan_frequency': 10.0,
+            'scan_mode': 'Standard',
+            'use_sim_time': False,
+        }],
+        remappings=[('scan', 'scan_raw')],
+    )
+
+
+    lidar_filter_cmd = Node(
+        package='wpr2_bringup',
+        executable='wpr2_lidar_filter',
+        output='screen',
+        parameters=[{'pub_topic': '/scan', 'use_sim_time': False}],
     )
 
     ld = LaunchDescription()
 
     ld.add_action(wpr2_core_cmd)
     ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(rviz_cmd)
+    ld.add_action(lidar_cmd)
+    ld.add_action(lidar_filter_cmd)
 
     return ld

@@ -2,7 +2,8 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import EmitEvent, IncludeLaunchDescription
+from launch.events import Shutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command
 from launch_ros.actions import Node
@@ -18,6 +19,23 @@ def generate_launch_description():
         get_package_share_directory('wpr2_tutorials'), 'rviz', 'sensor.rviz')
 
 
+    wpr2_core_cmd = Node(
+        package='wpr2_bringup',
+        executable='wpr2_core',
+        name='wpr2_core',
+        output='screen',
+        parameters=[config_file, {
+            'serial_port': '/dev/ftdi',
+            'publish_odom_tf': True,
+            'odom_frame': 'odom',
+            'base_frame': 'base_footprint',
+            'imu_frame': 'imu',
+            'use_sim_time': False,
+        }],
+        on_exit=[EmitEvent(event=Shutdown(reason='wpr2_core exited'))],
+    )
+
+
     robot_state_publisher_cmd = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -29,17 +47,17 @@ def generate_launch_description():
     )
 
 
-    joint_state_publisher_cmd = Node(
-        package='joint_state_publisher_gui',
-        executable='joint_state_publisher_gui',
-        output='screen',
-        parameters=[config_file, {'use_sim_time': False}],
-    )
-
-
     femto_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(
             bringup_dir, 'launch', 'include', 'start_femto_bolt.launch.py')),
+    )
+
+
+    face_detector_cmd = Node(
+        package='wpr2_tutorials',
+        executable='face_detector.py',
+        output='screen',
+        parameters=[{'use_sim_time': False}],
     )
 
 
@@ -52,9 +70,10 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
+    ld.add_action(wpr2_core_cmd)
     ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(joint_state_publisher_cmd)
     ld.add_action(femto_cmd)
+    ld.add_action(face_detector_cmd)
     ld.add_action(rviz_cmd)
 
     return ld
