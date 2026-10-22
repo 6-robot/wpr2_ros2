@@ -10,7 +10,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
     tutorials_dir = get_package_share_directory('wpr2_tutorials')
     map_file = os.path.join(tutorials_dir, 'maps', 'map.yaml')
-    waypoint_file = os.path.expanduser('~/waypoint.xml')
+    waypoint_file = os.path.expanduser('~/waypoints.xml')
     config_file = os.path.join(tutorials_dir, 'config', 'nav2_params.yaml')
     rviz_file = os.path.join(tutorials_dir, 'rviz', 'navi_waypoint.rviz')
     nav2_launch_file = os.path.join(

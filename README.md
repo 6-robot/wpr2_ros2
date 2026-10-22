@@ -385,9 +385,9 @@ colcon build
 source install/setup.bash
 ```
 
-实验9和10固定从包共享目录读取地图，无需传入参数。实验10的航点固定为 `~/waypoint.xml`，不做额外文件检查；实验20仍通过 `map`、`waypoints` 参数指定文件。
+实验9和10固定从包共享目录读取地图，无需传入参数。实验10的航点固定为 `~/waypoints.xml`，不做额外文件检查；实验20仍通过 `map`、`waypoints` 参数指定文件。
 
-航点默认保存在 `~/waypoint.xml`。首次编辑航点时，分别打开以下终端；地图编辑不需要启动机器人硬件：
+航点默认保存在 `~/waypoints.xml`。首次编辑航点时，分别打开以下终端；地图编辑不需要启动机器人硬件：
 
 终端一：加载地图
 
@@ -400,7 +400,7 @@ ros2 run nav2_map_server map_server --ros-args -p yaml_filename:="$(ros2 pkg pre
 ```bash
 ros2 lifecycle set /map_server configure
 ros2 lifecycle set /map_server activate
-ros2 run wp_map_tools wp_edit_node --ros-args -p load:=$HOME/waypoint.xml
+ros2 run wp_map_tools wp_edit_node --ros-args -p load:=$HOME/waypoints.xml
 ```
 
 终端三：打开配套的航点编辑界面

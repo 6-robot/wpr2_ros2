@@ -157,7 +157,7 @@ def test_fetch_launch_composition_and_files(tmp_path, monkeypatch):
     mod = module(ROOT / 'launch/ex20_bringup.launch.py')
     context = context_for(mod, map=tmp_path / 'ignored.yaml', waypoints=tmp_path / 'ignored.xml')
     map_file = tmp_path / 'map.yaml'
-    waypoint_file = tmp_path / 'waypoint.xml'
+    waypoint_file = tmp_path / 'waypoints.xml'
     with pytest.raises(RuntimeError, match='Map YAML'):
         mod.validate_files(context, str(map_file), str(waypoint_file))
     map_file.write_text('image: map.pgm\nresolution: 0.05\norigin: [0, 0, 0]\n')
@@ -166,7 +166,7 @@ def test_fetch_launch_composition_and_files(tmp_path, monkeypatch):
     (tmp_path / 'map.pgm').write_bytes(b'P5\n1 1\n255\n\xff')
     with pytest.raises(RuntimeError, match='Waypoint XML'):
         mod.validate_files(context, str(map_file), str(waypoint_file))
-    (tmp_path / 'waypoint.xml').write_text('<Waypoints/>')
+    (tmp_path / 'waypoints.xml').write_text('<Waypoints/>')
     mod.validate_files(context, str(map_file), str(waypoint_file))
     actions = mod.generate_launch_description().entities
     nodes = {executable(action, context): action for action in actions if isinstance(action, Node)}
@@ -178,7 +178,7 @@ def test_fetch_launch_composition_and_files(tmp_path, monkeypatch):
     assert parameters(nodes['wpr2_lidar_filter'], context)['pub_topic'] == '/scan'
     for name in ['wpr2_objects_3d', 'wpr2_grab']:
         assert parameters(nodes[name], context)['auto_start'] is False
-    assert parameters(nodes['wp_edit_node'], context)['load'] == str(Path.home() / 'waypoint.xml')
+    assert parameters(nodes['wp_edit_node'], context)['load'] == str(Path.home() / 'waypoints.xml')
     includes = [action for action in actions if isinstance(action, IncludeLaunchDescription)]
     assert len(includes) == 2
     for action in includes:
@@ -248,7 +248,7 @@ def test_waypoint_navigation_uses_fixed_files_without_preflight_checks(tmp_path,
     assert arguments['use_sim_time'] == 'False' and arguments['use_composition'] == 'False'
     nodes = {executable(action, context): action for action in actions if isinstance(action, Node)}
     assert set(nodes) == {'rviz2', 'wp_edit_node', 'wp_navi_server'}
-    assert parameters(nodes['wp_edit_node'], context)['load'] == str(Path.home() / 'waypoint.xml')
+    assert parameters(nodes['wp_edit_node'], context)['load'] == str(Path.home() / 'waypoints.xml')
     assert all(isinstance(action, (Node, IncludeLaunchDescription)) for action in actions)
 
 

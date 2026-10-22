@@ -38,7 +38,7 @@ def validate_files(context, map_file, waypoint_file):
 def generate_launch_description():
     tutorials_dir = get_package_share_directory('wpr2_tutorials')
     map_file = os.path.join(tutorials_dir, 'maps', 'map.yaml')
-    waypoint_file = os.path.expanduser('~/waypoint.xml')
+    waypoint_file = os.path.expanduser('~/waypoints.xml')
     bringup_dir = get_package_share_directory('wpr2_bringup')
     config_file = os.path.join(bringup_dir, 'config', 'wpr2.yaml')
     model_file = os.path.join(
