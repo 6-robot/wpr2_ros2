@@ -155,19 +155,19 @@ def test_teleop_and_slam_launches():
 
 def test_fetch_launch_composition_and_files(tmp_path, monkeypatch):
     mod = module(ROOT / 'launch/ex20_bringup.launch.py')
-    context = context_for(mod, map=tmp_path / 'missing.yaml', waypoints=tmp_path / 'waypoint.xml')
-    with pytest.raises(RuntimeError, match='Map YAML'):
-        mod.validate_files(context)
+    context = context_for(mod, map=tmp_path / 'ignored.yaml', waypoints=tmp_path / 'ignored.xml')
     map_file = tmp_path / 'map.yaml'
+    waypoint_file = tmp_path / 'waypoint.xml'
+    with pytest.raises(RuntimeError, match='Map YAML'):
+        mod.validate_files(context, str(map_file), str(waypoint_file))
     map_file.write_text('image: map.pgm\nresolution: 0.05\norigin: [0, 0, 0]\n')
-    context.launch_configurations['map'] = str(map_file)
     with pytest.raises(RuntimeError, match='Map image'):
-        mod.validate_files(context)
+        mod.validate_files(context, str(map_file), str(waypoint_file))
     (tmp_path / 'map.pgm').write_bytes(b'P5\n1 1\n255\n\xff')
     with pytest.raises(RuntimeError, match='Waypoint XML'):
-        mod.validate_files(context)
+        mod.validate_files(context, str(map_file), str(waypoint_file))
     (tmp_path / 'waypoint.xml').write_text('<Waypoints/>')
-    mod.validate_files(context)
+    mod.validate_files(context, str(map_file), str(waypoint_file))
     actions = mod.generate_launch_description().entities
     nodes = {executable(action, context): action for action in actions if isinstance(action, Node)}
     assert len(nodes) == sum(isinstance(action, Node) for action in actions)
@@ -178,20 +178,24 @@ def test_fetch_launch_composition_and_files(tmp_path, monkeypatch):
     assert parameters(nodes['wpr2_lidar_filter'], context)['pub_topic'] == '/scan'
     for name in ['wpr2_objects_3d', 'wpr2_grab']:
         assert parameters(nodes[name], context)['auto_start'] is False
-    assert parameters(nodes['wp_edit_node'], context)['load'] == str(tmp_path / 'waypoint.xml')
+    assert parameters(nodes['wp_edit_node'], context)['load'] == str(Path.home() / 'waypoint.xml')
     includes = [action for action in actions if isinstance(action, IncludeLaunchDescription)]
     assert len(includes) == 2
     for action in includes:
         action.launch_description_source.get_launch_description(context)
     assert {Path(action.launch_description_source.location).name for action in includes} == {
         'start_femto_bolt.launch.py', 'bringup_launch.py'}
-    assert {action.name for action in actions if isinstance(action, DeclareLaunchArgument)} == {'map', 'waypoints'}
+    assert not any(isinstance(action, DeclareLaunchArgument) for action in actions)
+    navigation = next(action for action in includes
+                      if Path(action.launch_description_source.location).name == 'bringup_launch.py')
+    assert dict(navigation.launch_arguments)['map'] == str(
+        Path(mod.get_package_share_directory('wpr2_tutorials')) / 'maps/map.yaml')
     # Missing grasp calibration must be reported before hardware is started.
     real_share = mod.get_package_share_directory
     monkeypatch.setattr(mod, 'get_package_share_directory', lambda name:
                         str(tmp_path / 'missing_behaviors') if name == 'wpr2_behaviors' else real_share(name))
     with pytest.raises(RuntimeError, match='Behavior parameter file'):
-        mod.validate_files(context)
+        mod.validate_files(context, str(map_file), str(waypoint_file))
 
 
 def test_imu_launch_override_preserves_default():

@@ -53,13 +53,13 @@ ros2 run wpr2_tutorials check_runtime.py
 | 17 | 物品抓取 | `ex17_bringup.launch.py` | `ex17_grab`，运行后自动开始一轮检测抓取 |
 | 18 | 语音输出 | `ex18_bringup.launch.py` | `ex18_tts` |
 | 19 | 语音识别 | `ex19_bringup.launch.py` | `ex19_recognition` |
-| 20 | 导航取物与递送 | `ex20_bringup.launch.py map:=/绝对路径/map.yaml` | `ex20_fetch`，定位完成后启动 |
+| 20 | 导航取物与递送 | `ex20_bringup.launch.py` | `ex20_fetch`，定位完成后启动 |
 
 实验 17 启动 `wpr2_core`、机器人 TF、Femto Bolt、C1 雷达及滤波、自动物体检测和 RViz；抓取示例单独启动。点云使用 `/camera/depth_registered/points`，检测结果为 `/wpr2/objects_3d`（`wpr2_msgs/Object`）。实验 20 进一步加入 Nav2、航点服务和 `wpr2_grab`，由单独运行的 `ex20_fetch` 调度任务。
 
 各实验 launch 直接列出节点、固定配置和启动顺序，示例代码不含文字注释。串口（底盘 `/dev/ftdi`、雷达 `/dev/rplidar`）、配置文件、传感器及 RViz 设置写在对应文件中；需要调整时修改该文件。原通用启动开关已移除。实验 1、11 默认启动关节滑块；实验 11 不启动底盘；实验 18、19 只启动语音依赖。单机器人保持空命名空间，使用真实时钟 `use_sim_time=False`。
 
-实验 8—10 的 bringup 只启动硬件，第二个 launch 启动算法和 RViz，避免重复打开窗口。`slam.launch.py`、`navigation.launch.py` 分别是 `ex08_slam.launch.py`、`ex09_navigation.launch.py` 的兼容入口，均需先单独启动硬件。实验9和10固定读取 `wpr2_tutorials/maps/map.yaml`，由 YAML 中的 `image: map.pgm` 加载同目录图像，不设置启动参数或额外文件检查；保存或更新地图后重新编译，将地图安装到包共享目录。实验10还固定读取 `~/waypoint.xml`，不设置启动参数或额外文件检查。实验20保留 `map`、`waypoints` 参数及相关文件检查。
+实验 8—10 的 bringup 只启动硬件，第二个 launch 启动算法和 RViz，避免重复打开窗口。`slam.launch.py`、`navigation.launch.py` 分别是 `ex08_slam.launch.py`、`ex09_navigation.launch.py` 的兼容入口，均需先单独启动硬件。实验9和10固定读取 `wpr2_tutorials/maps/map.yaml`，由 YAML 中的 `image: map.pgm` 加载同目录图像，不设置启动参数或额外文件检查；保存或更新地图后重新编译，将地图安装到包共享目录。实验10还固定读取 `~/waypoint.xml`，不设置启动参数或额外文件检查。实验20同样固定读取包内 `maps/map.yaml` 和 `~/waypoint.xml`，无需设置启动参数，保留相关文件检查。
 
 ## 示例代码约定
 
@@ -113,10 +113,10 @@ ros2 run wpr2_tutorials ex17_grab
 
 ### 实验 20
 
-先准备当前场地地图及包含 `kitchen`、`guest` 的航点 XML。`kitchen` 应位于可检测和对准桌面物体的位置，目标高度和抓取姿态需沿用实验 17 的实物标定。
+先将当前场地地图保存到 `wpr2_tutorials/maps/map.yaml` 及其引用的图片文件，重新编译并加载工作空间环境；将包含 `kitchen`、`guest` 的航点 XML 保存为 `~/waypoint.xml`。`kitchen` 应位于可检测和对准桌面物体的位置，目标高度和抓取姿态需沿用实验 17 的实物标定。
 
 ```bash
-ros2 launch wpr2_tutorials ex20_bringup.launch.py map:=/绝对路径/map.yaml waypoints:=/绝对路径/waypoint.xml
+ros2 launch wpr2_tutorials ex20_bringup.launch.py
 ```
 
 在 RViz 中用 2D Pose Estimate 完成定位，确认机器人位置和地图一致。

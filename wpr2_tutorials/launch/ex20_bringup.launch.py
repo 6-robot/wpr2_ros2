@@ -4,17 +4,16 @@ import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, EmitEvent, IncludeLaunchDescription, OpaqueFunction
+from launch.actions import EmitEvent, IncludeLaunchDescription, OpaqueFunction
 from launch.events import Shutdown
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, LaunchConfiguration
+from launch.substitutions import Command
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 
 
-def validate_files(context):
+def validate_files(context, map_file, waypoint_file):
 
-    map_file = os.path.abspath(os.path.expanduser(LaunchConfiguration('map').perform(context)))
     if not os.path.isfile(map_file):
         raise RuntimeError('Map YAML does not exist: ' + map_file)
     with open(map_file, encoding='utf-8') as stream:
@@ -27,11 +26,8 @@ def validate_files(context):
         get_package_share_directory('wpr2_tutorials'), 'config', 'nav2_params.yaml')
     if not os.path.isfile(config_file):
         raise RuntimeError('Nav2 parameter file does not exist: ' + config_file)
-    context.launch_configurations['map'] = map_file
-    waypoint_file = os.path.abspath(os.path.expanduser(LaunchConfiguration('waypoints').perform(context)))
     if not os.path.isfile(waypoint_file):
         raise RuntimeError('Waypoint XML does not exist: ' + waypoint_file)
-    context.launch_configurations['waypoints'] = waypoint_file
 
     behaviors_file = os.path.join(
         get_package_share_directory('wpr2_behaviors'), 'config', 'behaviors.yaml')
@@ -40,6 +36,9 @@ def validate_files(context):
 
 
 def generate_launch_description():
+    tutorials_dir = get_package_share_directory('wpr2_tutorials')
+    map_file = os.path.join(tutorials_dir, 'maps', 'map.yaml')
+    waypoint_file = os.path.expanduser('~/waypoint.xml')
     bringup_dir = get_package_share_directory('wpr2_bringup')
     config_file = os.path.join(bringup_dir, 'config', 'wpr2.yaml')
     model_file = os.path.join(
@@ -54,16 +53,8 @@ def generate_launch_description():
     nav2_launch_file = os.path.join(
         get_package_share_directory('nav2_bringup'), 'launch', 'bringup_launch.py')
 
-    map_cmd = DeclareLaunchArgument(
-        'map',
-        description='Absolute path to the map YAML for the current site.',
-    )
-    waypoints_cmd = DeclareLaunchArgument(
-        'waypoints',
-        default_value=os.path.expanduser('~/waypoint.xml'),
-        description='Waypoint XML containing kitchen and guest.',
-    )
-    check_files_cmd = OpaqueFunction(function=validate_files)
+    check_files_cmd = OpaqueFunction(
+        function=validate_files, args=[map_file, waypoint_file])
 
 
     wpr2_core_cmd = Node(
@@ -130,7 +121,7 @@ def generate_launch_description():
     navigation_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(nav2_launch_file),
         launch_arguments={
-            'map': LaunchConfiguration('map'),
+            'map': map_file,
             'params_file': nav_params_file,
             'use_sim_time': 'False',
             'use_composition': 'False',
@@ -142,7 +133,7 @@ def generate_launch_description():
         executable='wp_edit_node',
         name='wp_edit_node',
         output='screen',
-        parameters=[{'load': LaunchConfiguration('waypoints'), 'use_sim_time': False}],
+        parameters=[{'load': waypoint_file, 'use_sim_time': False}],
     )
     wp_navi_server_cmd = Node(
         package='wp_map_tools',
@@ -180,8 +171,6 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
-    ld.add_action(map_cmd)
-    ld.add_action(waypoints_cmd)
     ld.add_action(check_files_cmd)
     ld.add_action(wpr2_core_cmd)
     ld.add_action(robot_state_publisher_cmd)
